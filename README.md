@@ -28,47 +28,4 @@
 | **Framer Motion**   | Animations & transitions             |
 | **React Router v7** | SPA routing                          |
 
----
 
-## 🧩 Project Structure
-
-popcornboard/
-├── public/
-├── src/
-│ ├── assets/
-│ ├── components/
-│ ├── pages/
-│ ├── hooks/
-│ ├── utils/
-│ └── main.jsx
-├── .env
-├── index.html
-├── package.json
-├── tailwind.config.js
-└── vite.config.js
-
----
-
-## 📦 Installation
-
-1. **Clone the repo**
-
-```bash
-git clone https://github.com/your-username/popcornboard.git
-cd popcornboard
-
-### Install dependencies
-npm install
-
-### Configure environment
-Create a .env file and add the following:
-VITE_APPWRITE_ENDPOINT=your_appwrite_endpoint
-VITE_APPWRITE_PROJECT_ID=your_project_id
-VITE_APPWRITE_DATABASE_ID=your_db_id
-VITE_APPWRITE_COLLECTION_ID=your_collection_id
-VITE_APPWRITE_API_KEY=your_api_key
-VITE_TMDB_API_KEY=your_tmdb_key
-
-### Run the app
-npm run dev
-```
