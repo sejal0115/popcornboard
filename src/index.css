@@ -89,7 +89,7 @@
   }
 
   .all-movies {
-    @apply space-y-9;
+    @apply space-y-9 mt-10;
 
     & ul {
       @apply grid grid-cols-1 gap-5 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;

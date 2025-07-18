@@ -25,7 +25,6 @@ const API_OPTIONS = {
     }
 }
 
-
 const Home = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -65,8 +64,8 @@ const Home = () => {
         setErrorMessage('');
         try {
             const endpoint = query
-                ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${currentPage}`
-                : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${currentPage}`;
+                ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`
+                : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc&page=${page}`;
 
             const response = await fetch(endpoint, API_OPTIONS);
 
@@ -109,7 +108,7 @@ const Home = () => {
     }
 
     useEffect(() => {
-        fetchMovies(debounceSearchTerm);
+        fetchMovies(debounceSearchTerm, currentPage);
     }, [debounceSearchTerm, currentPage]);
 
     useEffect(() => {
