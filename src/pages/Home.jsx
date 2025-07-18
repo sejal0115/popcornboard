@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import Search from '../components/Search'
-import heroImg from '../assets/hero-img.png'
-import Logo from '../assets/logo.png'
+import heroImg from '../assets/hero-img.webp'
+import Logo from '../assets/logo.webp'
 import Spinner from '../components/Spinner';
 import MovieCard from '../components/MovieCard';
 import { useDebounce } from 'react-use';

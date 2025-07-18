@@ -33,7 +33,7 @@ const MovieCard = ({ movie, onClick, onRemoveFavorite }) => {
                 src={
                     poster_path
                         ? `https://image.tmdb.org/t/p/w500/${poster_path}`
-                        : 'src/assets/no-movie.png'
+                        : 'src/assets/no-movie.webp'
                 }
                 alt={title}
                 className="w-full h-auto rounded-md object-cover shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
