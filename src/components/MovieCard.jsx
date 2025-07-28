@@ -15,7 +15,7 @@ const MovieCard = ({ movie, onClick, onRemoveFavorite }) => {
 
         if (isFavorite) {
             updatedFavorites = storedFavorites.filter(movieId => movieId !== id);
-            if (onRemoveFavorite) onRemoveFavorite(id); // ✅ trigger the callback
+            if (onRemoveFavorite) onRemoveFavorite(id);
         } else {
             updatedFavorites = [...storedFavorites, id];
         }

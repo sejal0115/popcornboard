@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MovieModal = ({ movie, onClose }) => {
+    const [watchProviders, setWatchProviders] = useState(null);
+    const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+
     if (!movie) return null;
 
     const {
+        id,
         title,
         original_title,
         release_date,
@@ -26,6 +30,68 @@ const MovieModal = ({ movie, onClose }) => {
         ? `https://image.tmdb.org/t/p/w500/${poster_path}`
         : 'src/assets/No-Poster1.png';
 
+    // 🔥 Fetch Watch Providers
+    useEffect(() => {
+        const fetchWatchProviders = async () => {
+            try {
+                const res = await fetch(
+                    `https://api.themoviedb.org/3/movie/${id}/watch/providers`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${API_KEY}`
+                        }
+                    }
+                );
+
+                const data = await res.json();
+                // console.log('All Region Providers:', data.results);
+
+                //  Allowed regions in priority order
+                const allowedRegions = ["IN", "US", "GB", "CA", "AU"];
+
+                let selectedRegion = null;
+                for (let region of allowedRegions) {
+                    const details = data.results[region];
+                    if (
+                        details &&
+                        (details.flatrate?.length > 0 ||
+                            details.rent?.length > 0 ||
+                            details.buy?.length > 0)
+                    ) {
+                        selectedRegion = region;
+                        break;
+                    }
+                }
+
+                if (selectedRegion) {
+                    const details = data.results[selectedRegion];
+
+                    const combinedProviders = [
+                        ...(details.flatrate || []),
+                        ...(details.rent || []),
+                        ...(details.buy || [])
+                    ];
+
+                    const uniqueProviders = Array.from(
+                        new Map(combinedProviders.map(p => [p.provider_id, { ...p, region: selectedRegion, link: details.link }])).values()
+                    );
+
+                    setWatchProviders(uniqueProviders);
+                } else {
+                    setWatchProviders(null);
+                }
+            } catch (error) {
+                console.error('Error fetching watch providers:', error);
+            }
+        };
+
+        fetchWatchProviders();
+    }, [id, API_KEY]);
+
+
+
     return (
         <AnimatePresence>
             <motion.div
@@ -40,6 +106,7 @@ const MovieModal = ({ movie, onClose }) => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 50, opacity: 0 }}
                 >
+                    {/* Close Button */}
                     <button
                         onClick={onClose}
                         className="absolute top-3 right-3 text-white text-3xl z-50 hover:text-red-400 transition cursor-pointer"
@@ -56,6 +123,7 @@ const MovieModal = ({ movie, onClose }) => {
                         />
 
                         <div className="p-4 md:p-6 space-y-4">
+                            {/* Title */}
                             <h2 className="text-2xl md:text-3xl font-bold leading-tight cursor-context-menu">
                                 {title}
                                 {original_title && original_title !== title && (
@@ -68,6 +136,7 @@ const MovieModal = ({ movie, onClose }) => {
                                 {language} • ⭐ {vote_average?.toFixed(1)} ({vote_count} votes) • 🔥 {Math.round(popularity)} popularity
                             </p>
 
+                            {/* Genres */}
                             {genres?.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {genres.map((g, i) => (
@@ -78,12 +147,15 @@ const MovieModal = ({ movie, onClose }) => {
                                 </div>
                             )}
 
+                            {/* Tagline */}
                             {tagline && (
                                 <p className="italic text-purple-400 text-sm">“{tagline}”</p>
                             )}
 
+                            {/* Overview */}
                             <p className="text-sm text-white cursor-context-menu">{overview}</p>
 
+                            {/* Official Site */}
                             {homepage && (
                                 <a
                                     href={homepage}
@@ -94,12 +166,38 @@ const MovieModal = ({ movie, onClose }) => {
                                     Visit Official Site →
                                 </a>
                             )}
+
+                            {/* 🎬 Watch Now Section */}
+                            <div className="mt-6">
+                                <h3 className="text-lg font-semibold mb-2">Watch Now</h3>
+                                {watchProviders ? (
+                                    <div className="flex flex-wrap gap-4">
+                                        {watchProviders.map((provider, index) => (
+                                            <a
+                                                key={`${provider.provider_id}-${index}`}
+                                                href={provider.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title={`Watch on ${provider.provider_name} (${provider.region})`}
+                                            >
+                                                <img
+                                                    src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
+                                                    alt={provider.provider_name}
+                                                    className="w-12 h-12 rounded hover:scale-110 transition-transform"
+                                                />
+                                            </a>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-400 text-sm">Not available for streaming anywhere.</p>
+                                )}
+                            </div>
+
                         </div>
                     </div>
                 </motion.div>
             </motion.div>
         </AnimatePresence>
-
     );
 };
 

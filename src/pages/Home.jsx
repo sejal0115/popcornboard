@@ -5,7 +5,7 @@ import Logo from '../assets/logo.webp'
 import Spinner from '../components/Spinner';
 import MovieCard from '../components/MovieCard';
 import { useDebounce } from 'react-use';
-import { getTrendingMovies, updateSearchCount } from '../appwrite';
+import { updateSearchCount } from '../appwrite';
 import MovieModal from '../components/MovieModal';
 import Pagination from '../components/Pagination';
 import MovieSkeleton from '../components/MovieSkeleton';
@@ -99,13 +99,22 @@ const Home = () => {
 
     const loadTrendingMovies = async () => {
         try {
-            const movies = await getTrendingMovies();
+            const response = await fetch(
+                `${API_BASE_URL}/trending/movie/week`, // Use 'day' or 'week'
+                API_OPTIONS
+            );
 
-            setTrendingMovies(movies);
+            if (!response.ok) throw new Error('Failed to fetch trending movies.');
+
+            const data = await response.json();
+            console.log("Trending Movies:", data.results);
+
+            setTrendingMovies(data.results.slice(0, 5)); // Show only top 5 trending
         } catch (error) {
             console.error(`Error fetching trending movies: ${error}`);
         }
-    }
+    };
+
 
     useEffect(() => {
         fetchMovies(debounceSearchTerm, currentPage);
@@ -141,18 +150,21 @@ const Home = () => {
 
                 {trendingMovies.length > 0 && (
                     <section className="trending w-full">
-                        <h2>🔥Trending Movies</h2>
-
+                        <h2>🔥 Trending Movies</h2>
                         <ul>
                             {trendingMovies.map((movie, index) => (
-                                <li key={movie.$id}>
+                                <li key={movie.id} onClick={() => setSelectedMovie(movie)}>
                                     <p>{index + 1}</p>
-                                    <img src={movie.poster_url} alt={movie.title} />
+                                    <img
+                                        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                        alt={movie.title}
+                                    />
                                 </li>
                             ))}
                         </ul>
                     </section>
                 )}
+
 
                 <section ref={moviesSectionRef} className='all-movies'>
                     <div className="flex gap-8 justify-between">
