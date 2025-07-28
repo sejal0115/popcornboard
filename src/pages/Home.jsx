@@ -100,16 +100,16 @@ const Home = () => {
     const loadTrendingMovies = async () => {
         try {
             const response = await fetch(
-                `${API_BASE_URL}/trending/movie/week`, // Use 'day' or 'week'
+                `${API_BASE_URL}/trending/movie/week`,
                 API_OPTIONS
             );
 
             if (!response.ok) throw new Error('Failed to fetch trending movies.');
 
             const data = await response.json();
-            console.log("Trending Movies:", data.results);
+            // console.log("Trending Movies:", data.results);
 
-            setTrendingMovies(data.results.slice(0, 5)); // Show only top 5 trending
+            setTrendingMovies(data.results.slice(0, 5));
         } catch (error) {
             console.error(`Error fetching trending movies: ${error}`);
         }
